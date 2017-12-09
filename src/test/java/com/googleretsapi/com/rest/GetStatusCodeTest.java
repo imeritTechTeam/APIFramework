@@ -15,6 +15,8 @@ import Utilities.IOExcel;
 import Utilities.Log;
 
 public class GetStatusCodeTest {
+	static int i;
+	static int j=0;
 
   @BeforeClass
   public void setBaseUri () {
@@ -37,11 +39,12 @@ public class GetStatusCodeTest {
 	 // IOExcel.setExcelStringData(1, 1,"fghjk", "Sheet1");
 	  
 	
-	  for(int i=0;i<=1;i++)
+	  for( i=0;i<=1;i++)
 	  {
-		  for(int j=0;j<=1;j++)
+		  for( j=0;j<=1;j++)
 		  { 
 			 arr[i][j]= IOExcel.getExcelStringData(i, j,"Sheet1");
+			 
 			// System.out.println(arr[i][j]);
 		  }
 	  }
@@ -66,6 +69,7 @@ public class GetStatusCodeTest {
     //System.out.println (res.asString());
     
     String op = res.path("results[0].formatted_address");
+    IOExcel.setExcelStringData(i, j,op, "Sheet2");
     System.out.println(op); 
     Assert.assertEquals (res.statusCode (), 200);
   }

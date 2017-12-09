@@ -12,6 +12,7 @@ import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
 import Utilities.IOExcel;
+import Utilities.Log;
 
 public class GetStatusCodeTest {
 
@@ -19,36 +20,38 @@ public class GetStatusCodeTest {
   public void setBaseUri () {
 
     RestAssured.baseURI = "https://maps.googleapis.com";
-    IOExcel.excelSetup("D:\\testdata");
+    Log.startLogForThisCase("ffff");
+    IOExcel.excelSetup("D:\\testdata\\testdata.xlsx");
 
   }
   
-  //@DataProvider(name="DataSource")
-  @Test
-  public static void exceldatasource()
+
+  @DataProvider(name="DataSource")
+  public static Object [][] exceldatasource()
   {
-	  //Object arr[][]=new Object[2][2];
+	  Object arr[][]=new Object[2][2];
 	 // arr[0][0]= IOExcel.getExcelStringData(1,1,"Sheet1");
 		// System.out.println(arr[0][0]);
 		//System.out.println( IOExcel.getExcelStringData(0,0,"Sheet1"));
-	  IOExcel.setExcelStringData(1, 1,"fghjk", "Sheet1");
 	  
-	/*
+	 // IOExcel.setExcelStringData(1, 1,"fghjk", "Sheet1");
+	  
+	
 	  for(int i=0;i<=1;i++)
 	  {
 		  for(int j=0;j<=1;j++)
 		  { 
-			 arr[i][j]= IOExcel.getExcelStringData(i+1, j+1,"Sheet1");
-			 System.out.println(arr[i][j]);
+			 arr[i][j]= IOExcel.getExcelStringData(i, j,"Sheet1");
+			// System.out.println(arr[i][j]);
 		  }
-	  }*/
+	  }
 	
 	  
-	//  return arr;
+	  return arr;
 	
   }
 
-  /*@Test(dataProvider="DataSource")
+  @Test(dataProvider="DataSource")
  
   public void testStatusCode (String SearchText, String Key )
   {
@@ -60,8 +63,12 @@ public class GetStatusCodeTest {
     .when()
     .get ("/maps/api/place/textsearch/json");
     System.out.println("Status returned is "+res.statusCode ());
+    //System.out.println (res.asString());
+    
+    String op = res.path("results[0].formatted_address");
+    System.out.println(op); 
     Assert.assertEquals (res.statusCode (), 200);
-  }*/
+  }
 
   
 /*@Test

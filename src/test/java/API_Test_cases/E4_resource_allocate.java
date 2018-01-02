@@ -260,6 +260,7 @@ public class E4_resource_allocate
 			
 		} catch (SQLException e) {
 			
+			
 			e.printStackTrace();
 		}  
 		 

@@ -70,6 +70,7 @@ public class E4_resource_nodes_get {
 */
   }
   
+  
   @BeforeMethod
 	public void init(Method method)
 	{

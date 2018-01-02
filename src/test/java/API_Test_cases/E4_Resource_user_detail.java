@@ -44,6 +44,7 @@ public class E4_Resource_user_detail {
 	  Log.startLogForThisCase("Resource resource/user/details");
 	  IOExcel.excelSetup("D:\\testdata\\API\\API_resource_user_details.xlsx");
 
+	  
   }
   
   @BeforeMethod

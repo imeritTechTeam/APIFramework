@@ -14,20 +14,22 @@ public class ExtentManager {
 	private static String filePath ;
 	
 	
-	public static ExtentReports GetExtent(){
+	public static ExtentReports GetExtent(String ReportName){
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		String filename=ReportName.replace(" ","").replace(":","").replace("/","").replace("//", "").replace(".","");
+		//System.out.println(filename);
 		
-		 filePath="E:\\testdata\\reports\\"+"Extent_Report_"+timestamp.toString().replace(":", "_").replace("-","_").replace(" ","_").replace(".", "_")+".html";
+		 filePath="D:\\testdata\\Reports\\API\\"+filename+"_"+timestamp.toString().replace(":", "_").replace("-","_").replace(" ","_").replace(".", "_")+".html";
 		// filePath="./src/ExtentReports/Extent_Report"+timestamp.toString().replace(":", "_").replace("-","_").replace(" ","_").replace(".", "_")+".html";
 		if (extent != null)
         return extent; //avoid creating new instance of html file
 		
         extent = new ExtentReports();		
-		extent.attachReporter(getHtmlReporter());
+		extent.attachReporter(getHtmlReporter(ReportName));
 		return extent;
 	}
  
-	private static ExtentHtmlReporter getHtmlReporter() {
+	private static ExtentHtmlReporter getHtmlReporter(String ReportName) {
 		System.out.println(filePath);
 	
         htmlReporter = new ExtentHtmlReporter(filePath);
@@ -35,8 +37,8 @@ public class ExtentManager {
 	// make the charts visible on report open
         htmlReporter.config().setChartVisibilityOnOpen(true);
 		
-        htmlReporter.config().setDocumentTitle("QAV automation report");
-        htmlReporter.config().setReportName("Regression cycle");
+        htmlReporter.config().setDocumentTitle("API Automation Report");
+        htmlReporter.config().setReportName(ReportName);
         return htmlReporter;
 	}
 	

@@ -33,6 +33,21 @@ public class IOExcel {
 	private static XSSFRow crow;
 	private static String excelfilepath;
 	
+
+	
+	static int rowcount=0;
+	public static int Getrowcount(String sheetname)
+	{
+		try {
+			sheet=wbook.getSheet(sheetname);
+			rowcount=sheet.getLastRowNum();
+			
+		} catch (Exception e) {						
+			Log.error("Excel file data problem: "+e);
+			e.printStackTrace();
+		}
+		return rowcount;
+	}
 	public static void  excelSetup(String filePath)
 	{
 		 try {
@@ -53,10 +68,12 @@ public class IOExcel {
 		
 		try {
 			sheet=wbook.getSheet(sheetname);
+			rowcount=sheet.getLastRowNum();
 			cellvalue=sheet.getRow(row).getCell(col).getStringCellValue();
 		} catch (Exception e) {						
 			Log.error("Excel file data problem: "+e);
-			e.printStackTrace();
+			System.out.println("Excel getExcelStringData problem: "+e);
+			//e.printStackTrace();
 		}
 		return cellvalue;
 	}
@@ -66,10 +83,12 @@ public class IOExcel {
 		
 		try {
 			sheet=wbook.getSheet(sheetname);
+			rowcount=sheet.getLastRowNum();
 			cellvalue=(int) sheet.getRow(row).getCell(col).getNumericCellValue();
 		} catch (Exception e) {						
 			Log.error("Excel file data problem: "+e);
-			e.printStackTrace();
+			System.out.println("IOExcel getExcelIntData problem: "+e);
+			//e.printStackTrace();
 		}
 		return cellvalue;
 	}

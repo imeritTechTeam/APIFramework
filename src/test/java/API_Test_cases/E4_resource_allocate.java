@@ -42,6 +42,7 @@ public class E4_resource_allocate
 	ExtentReports reports;
 	ExtentTest test;
 	String testCaseName;
+	Boolean resultsetnotempty;
 	
 	@BeforeSuite
 	public void startup()
@@ -84,21 +85,33 @@ public class E4_resource_allocate
   public void postString (String userCode,String allocateMembers,String unAllocateMembers,String nodeId,String engagementDetailCode ) 
 	{
 	  
+	  String jsonreq;
+	  if(unAllocateMembers==null)
+	  {
+	  jsonreq="{\"userCode\":\""+userCode+"\","
+	    	    +"\"allocateMembers\":[\""+allocateMembers+"\"],"
+	    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
+	    	    +"\"nodeId\":\""+nodeId+"\","
+	    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}" ;
+	  }
+	  else
+	  {
+		  jsonreq="{\"userCode\":\""+userCode+"\","
+		    	    +"\"allocateMembers\":[],"
+		    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
+		    	    +"\"nodeId\":\""+nodeId+"\","
+		    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}" ;
+	  }
 	
 	  
 	 test.info("Starting API 34.214.158.70:32845/impp/imerit/resource/allocate/0");
 	 
 	Response res  =
     given()//.log().all()
-    .body ("{\"userCode\":\"techteam@imerit.net\","
+   /* .body ("{\"userCode\":\"techteam@imerit.net\","
     +"\"memberCode\":\"animesh@imerit.net\"}"
-    )
-    .body ("{\"userCode\":\""+userCode+"\","
-    	    +"\"allocateMembers\":[\""+allocateMembers+"\"],"
-    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
-    	    +"\"nodeId\":\""+nodeId+"\","
-    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}"
-    	   )
+    )*/
+    .body (jsonreq)
     .when ()
     .contentType (ContentType.JSON)
     .post ()
@@ -108,26 +121,15 @@ public class E4_resource_allocate
 	.response();
 	 
 	
-	 test.info("JSON REQUEST : {\"userCode\":\""+userCode+"\","
-	    	    +"\"allocateMembers\":[\""+allocateMembers+"\"],"
-	    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
-	    	    +"\"nodeId\":\""+nodeId+"\","
-	    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}");
-	 System.out.println("{\"userCode\":\""+userCode+"\","
-	    	    +"\"allocateMembers\":[\""+allocateMembers+"\"],"
-	    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
-	    	    +"\"nodeId\":\""+nodeId+"\","
-	    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}");
+	 test.info(jsonreq);
+	 System.out.println(jsonreq);
 	 
 	
-	IOExcel.setExcelStringData(row, col, "{\"userCode\":\""+userCode+"\","
-    	    +"\"allocateMembers\":[\""+allocateMembers+"\"],"
-    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
-    	    +"\"nodeId\":\""+nodeId+"\","
-    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}", "Sheet2"); 
+	IOExcel.setExcelStringData(row, col, jsonreq, "Sheet2"); 
 	 col++;
 	 System.out.println ("Status code "+res.statusLine());
 	 IOExcel.setExcelStringData(row, col, res.statusLine(), "Sheet2");
+	 test.info("Status code "+res.statusLine());
 	 col++;
 	 System.out.println (res.asString());
 	 IOExcel.setExcelStringData(row, col, res.asString(), "Sheet2"); 
@@ -157,7 +159,10 @@ public class E4_resource_allocate
 	 //json detail extraction
 	 
 	// System.out.println("Json array count "+res.body().path("$.size()"));
-	 int jsonarrcount =res.body().path("$.size()");
+	 int jsonarrcount;
+	try {
+		jsonarrcount = res.body().path("$.size()");
+	
 	 if(jsonarrcount==0)
 	 {
 		 row++;
@@ -195,7 +200,10 @@ public class E4_resource_allocate
 	
 		 col=0;
 		 System.out.println("row "+row);
-	
+	} catch (Exception e1) {
+		
+		System.out.println(e1);
+	}
 	  
 	  
 	  //DB************************************************
@@ -227,7 +235,7 @@ public class E4_resource_allocate
 	  		"and c.node_cid in ('"+nodeId+"')";
 	  
 	  
-	  	 System.out.println("select distinct\r\n" + 
+	  	/* System.out.println("select distinct\r\n" + 
 	 	  		"d.email,\r\n" + 
 		  		"a.engagement_detail_code,\r\n" + 
 		  		"c.*,\r\n" + 
@@ -239,13 +247,13 @@ public class E4_resource_allocate
 		  		"and c.member_id=d.id\r\n" + 
 		  		"and c.is_active in (1)\r\n" + 
 		  		"and d.email in ('"+usermail+"') \r\n" + 
-		  		"and c.node_cid in ('"+nodeId+"')");
+		  		"and c.node_cid in ('"+nodeId+"')");*/
 		try {
 			stmt=Dbconnection.con.createStatement(); 
 			rs=stmt.executeQuery(query);
 			System.out.println("Query Executed");
-			
-				if(rs.next())
+			resultsetnotempty =rs.next();
+				if(resultsetnotempty)
 				{
 				System.out.println("email "+rs.getString(1)+" "
 									+"engagement_code "+rs.getString(2)+" "
@@ -269,15 +277,15 @@ public class E4_resource_allocate
 		try {
 			if((unAllocateMembers==null)&&(rs.getInt(9)==1)&&(rs.getDate(8)==null)) //if allocation call
 			{
-				test.pass("Resource assigned succesfull .In db is_active is changed to "+rs.getInt(9)+" and end_date="+rs.getDate(8));
+				test.pass("Resource assigned succesfull . In db \"is_active\" is changed to "+rs.getInt(9)+" and \"end_date\"="+rs.getDate(8));
 			}
-			else if((allocateMembers==null)&&(rs.getInt(9)==0)&&(rs.getDate(8)!=null)) //if unallocate call
+			else if((allocateMembers==null)&&(resultsetnotempty==false)&&(res.statusCode()==200)) //if unallocate call
 			{
-				test.pass("Resource Unassign succesfull .In db is_active is changed to "+rs.getInt(9)+" and end_date="+rs.getDate(8));
+				test.pass("Resource Unassign succesfull ");
 			}
 			else 
 			{
-				test.fail("In db is_active is changed to "+rs.getInt(9)+" and end_date="+rs.getDate(8));
+				test.fail("Test Failed");
 				
 			}
 			

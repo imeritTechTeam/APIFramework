@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 
 public class Dbconnection {
 	public static Connection con;
+	
 	public static void dbstartup()
 	{
 	

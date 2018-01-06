@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Hashtable;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
@@ -32,6 +33,7 @@ public class IOExcel {
 	private static XSSFCell cell;
 	private static XSSFRow crow;
 	private static String excelfilepath;
+	static Hashtable<String,String> table;
 	
 
 	
@@ -62,6 +64,83 @@ public class IOExcel {
 		 
 	}
 	
+	 //*****************Get Data from Excel sheet *************//
+	public static Object[][] getDataArray(String SheetName)
+		
+	{
+			Object[][] data=null;
+			
+		try
+			{
+				//FileInputStream Scriptfis = new FileInputStream(FilePath);
+				
+				//wbook=new XSSFWorkbook(Scriptfis);
+				sheet = wbook.getSheet(SheetName);
+				
+				int Startrow=1;   
+				int StartCol=0;   
+				crow=sheet.getRow(0);
+			    
+							
+								
+							int TotalRow=sheet.getLastRowNum();
+							int TotalCol=crow.getLastCellNum();
+							
+							 System.out.println(TotalRow+"\t\t"+TotalCol);
+							 
+				                 data=new Object[TotalRow][1];
+				 		    
+			                for(int j=1; j<=TotalRow;j++)
+			                    
+			                {           
+			                       table = new Hashtable<String,String>();
+			   
+			                         for(int k=0 ; k<TotalCol; k++)
+			                          {
+			                    
+			                         table.put(getCellData(0, k), getCellData(j, k));
+			                    
+			                          }
+			   
+			                          data[j-1][0] = table;
+			                
+			                 }
+				              
+						
+			             
+					
+					
+					}
+		catch (Exception e)
+				    
+		{
+				     
+			System.out.println("Could not read the Excelsheet"+e.getMessage());
+		    e.printStackTrace();
+	    }
+				
+		  return data;
+	
+		  
+	}
+	  //*****************Get Data from Cell of Excel sheet *************//
+			public static String getCellData(int RowNum, int ColNum) throws Exception
+			{
+
+			   try
+			   {
+				     cell = sheet.getRow(RowNum).getCell(ColNum);
+				     
+				     String CellData = (String)cell.getStringCellValue();
+				    
+				    return CellData;
+			   }
+			   catch (Exception e)
+			   {
+			   return "";
+			   }
+	 
+			}
 	public static String getExcelStringData(int row,int col,String sheetname)
 	{
 		String cellvalue=null;

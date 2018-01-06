@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.Assert;
@@ -28,6 +29,7 @@ import Utilities.IOExcel;
 import Utilities.Log;
 import Utilities.Dbconnection;
 import Utilities.ExtentManager;
+import Utilities.PathUtility;
 
 public class E4_resource_allocate 
 {
@@ -54,16 +56,10 @@ public class E4_resource_allocate
   public void setBaseUri () {
 
 	  reports = ExtentManager.GetExtent("http://34.214.158.70:32845/impp/imerit/resource/allocate/new/0 ");
-	  
-		
-	 RestAssured.baseURI="http://34.214.158.70:32845/impp/imerit/resource/allocate/new/0"; //ITEST
-	  
+	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/resource/allocate/new/0"; //ITEST
 	  Log.startLogForThisCase("API Testing Resource /resource/allocate/");
-	  String Basepath="D:\\testdata\\API\\";
-	  IOExcel.excelSetup(Basepath+"E4_resoure_allocate.xlsx");
+	  IOExcel.excelSetup(PathUtility.BaseFilepath+"E4_resoure_allocate.xlsx");
 	  
-	  
-	
   }
   @BeforeMethod
 	public void init(Method method)
@@ -80,12 +76,17 @@ public class E4_resource_allocate
 	}
 
 
-  @Test(dataProvider="DataSource")
-
-  public void postString (String userCode,String allocateMembers,String unAllocateMembers,String nodeId,String engagementDetailCode ) 
-	{
+  @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
+  public void postString(Hashtable <String,String> TestData) 
+  {
 	  
-	  String jsonreq;
+  String userCode=TestData.get("userCode");
+  String allocateMembers=TestData.get("allocateMembers");
+  String unAllocateMembers=TestData.get("unAllocateMembers");
+  String nodeId=TestData.get("nodeId");
+  String engagementDetailCode=TestData.get("engagementDetailCode");
+  String jsonreq;
+	  
 	  if(unAllocateMembers==null)
 	  {
 	  jsonreq="{\"userCode\":\""+userCode+"\","
@@ -299,36 +300,6 @@ public class E4_resource_allocate
 	 
 	}
 
- @DataProvider(name="DataSource")
- 
-  public static Object[][] exceldatasource()
-  {
-	 int count=IOExcel.Getrowcount("Sheet1");
-	 System.out.println("row count in Excel data sheet "+count);
-	 
-	  Object arr[][]=new Object[count][5];
-	 
-	  int n=0;int k=0;
-	
-	  for( i=1;i<=count;i++)
-	  {
-		  k=0;
-		  for( j=0;j<=4;j++)
-		  { 
-			 arr[n][k]= IOExcel.getExcelStringData(i, j,"Sheet1");
-			// System.out.println("i "+i+" j "+j+" arr[n][k]"+arr[n][k]+" n "+n+" k "+k);
-			// System.out.println("i "+i+" j "+j);
-			 k++;
-			//System.out.println(arr[n][k]);
-		  }
-		  n++;
-	  }
-	
-	  
-	  return arr;
-	
-  }
- 
  @AfterClass
  public void teardown()
  {

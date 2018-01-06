@@ -3,6 +3,7 @@ package API_Test_cases;
 import static com.jayway.restassured.RestAssured.given;
 
 import java.lang.reflect.Method;
+import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.Assert;
@@ -21,6 +22,7 @@ import com.jayway.restassured.response.Response;
 import Utilities.ExtentManager;
 import Utilities.IOExcel;
 import Utilities.Log;
+import Utilities.PathUtility;
 
 public class E4_resource_get_users {
 	static int i;
@@ -33,11 +35,11 @@ public class E4_resource_get_users {
   @BeforeClass
   public void setBaseUri () {
 
-	  reports = ExtentManager.GetExtent("API Test Results of http://34.214.158.70:32845/impp/imerit/resource/get/users/0");
-	  RestAssured.baseURI="http://34.214.158.70:32845/impp/imerit/resource/get/users/0";
-	  Log.startLogForThisCase("E4 Resource/get/users");
-	  String Basepath="D:\\testdata\\API\\";
-	  IOExcel.excelSetup(Basepath+"E4_resource_getusers_.xlsx");
+	  reports = ExtentManager.GetExtent("http://34.214.158.70:32845/impp/imerit/resource/get/users/0 ");
+	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/resource/get/users/0"; //ITEST
+	  Log.startLogForThisCase("API Testing Resource /resource/get/users");
+	  IOExcel.excelSetup(PathUtility.BaseFilepath+"E4_resource_getusers_.xlsx");
+	  
 
 	  
   }
@@ -56,10 +58,14 @@ public class E4_resource_get_users {
  		
  	}
 
-  @Test(dataProvider="DataSource")
-
-  public void postString (String userCode,String engagementDetailCode ,String nodeId ) 
+  @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
+  public void postString (Hashtable<String,String> TestData) 
 	{
+	  String userCode=TestData.get("userCode");
+	  String engagementDetailCode=TestData.get("engagementDetailCode");
+	  String nodeId=TestData.get("nodeId"); 
+	  
+	  
 	  test.info("Starting API http://34.214.158.70:32845/impp/imerit/resource/get/users/0");
 	//"http://34.214.158.70:32845/impp/imerit/action/access/0"
 	 Response res  =
@@ -161,47 +167,13 @@ public class E4_resource_get_users {
 			 row++;
 		 }
 	 }
-	 
-	 
 	
 		 col=0;row++;
 		 System.out.println("row "+row);
 	
-	
   }
 
- @DataProvider(name="DataSource")
- 
-  public static Object[][] exceldatasource()
-  {
-	 int count=IOExcel.Getrowcount("Sheet1");
-	 count=1;
-	 System.out.println("Fetching "+count+" rows from testdata excel ");
-	 int col=3;
-	 System.out.println("Fetching "+col+" columns from testdata excel ");
-	  Object arr[][]=new Object[count][col];
-	 
-	  int n=0;int k=0;
-	
-	  for( i=1;i<=count;i++)
-	  {
-		  k=0;
-		  for( j=0;j<=(col-1);j++)
-		  { 
-			 arr[n][k]= IOExcel.getExcelStringData(i, j,"Sheet1");
-			// System.out.println("i "+i+" j "+j+" arr[n][k]"+arr[n][k]+" n "+n+" k "+k);
-			// System.out.println("i "+i+" j "+j);
-			 k++;
-			//System.out.println(arr[n][k]);
-		  }
-		  n++;
-	  }
-	
-	  
-	  return arr;
-	
-  }
- 
+
  @AfterClass
  public void teardown()
  {

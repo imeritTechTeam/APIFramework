@@ -35,6 +35,7 @@ public class E4_Resource_user_detail {
 	ExtentReports reports;
 	ExtentTest test;
 	String testCaseName;
+	int count=1;
 
   @BeforeClass
   public void setBaseUri () {
@@ -50,14 +51,14 @@ public class E4_Resource_user_detail {
   @BeforeMethod
 	public void init(Method method)
 	{
-		testCaseName =method.getName();
+		/*testCaseName =method.getName();*/
 		Log.startLogForThisCase(testCaseName);
-		if(reports!=null)
+		/*if(reports!=null)
 		{
 		test=reports.createTest(testCaseName);
 		//System.out.println("Report created");
 		}
-		else System.out.println("reports obj is null");
+		else System.out.println("reports obj is null");*/
 		
 	}
   
@@ -67,6 +68,8 @@ public class E4_Resource_user_detail {
 
   public void postString (String userCode,String memberCode ) 
 	{
+	  test = reports.createTest("API resource/user/details/0 TC"+count);
+	  count++;
 	  test.info("Starting API http://34.214.158.70:32845/impp/imerit/resource/user/details/0");
 	//"http://34.214.158.70:32845/impp/imerit/action/access/0"
 	 Response res  =
@@ -261,7 +264,8 @@ public class E4_Resource_user_detail {
  @AfterClass
  public void teardown()
  {
-	  reports.flush();
+	 reports.removeTest(test);
+	 reports.flush();
 
  }
 

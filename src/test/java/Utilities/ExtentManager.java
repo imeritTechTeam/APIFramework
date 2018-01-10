@@ -26,6 +26,9 @@ public class ExtentManager {
 		
         extent = new ExtentReports();		
 		extent.attachReporter(getHtmlReporter(ReportName));
+		extent.setSystemInfo("OS", "Windows 10");
+        extent.setSystemInfo("Environment", "ITest");
+        extent.setSystemInfo("User Name", "Debapriyo Haldar");
 		return extent;
 	}
  

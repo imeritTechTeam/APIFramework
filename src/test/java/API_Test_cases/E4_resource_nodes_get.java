@@ -41,6 +41,7 @@ public class E4_resource_nodes_get {
 	static int i;
 	static int j=0;
 	int row =1;int col =0;
+	int count=1;
 	Connection con;
 	Statement stmt;
 	ResultSet rs;
@@ -74,14 +75,14 @@ public class E4_resource_nodes_get {
   @BeforeMethod
 	public void init(Method method)
 	{
-		testCaseName =method.getName();
+		/*testCaseName =method.getName();*/
 		Log.startLogForThisCase(testCaseName);
-		if(reports!=null)
+		/*if(reports!=null)
 		{
 		test=reports.createTest(testCaseName);
 		//System.out.println("Report created");
 		}
-		else System.out.println("reports obj is null");
+		else System.out.println("reports obj is null");*/
 		
 	}
 
@@ -90,6 +91,8 @@ public class E4_resource_nodes_get {
 
   public void postString (String userCode,String engagementDetailCode ) 
 	{
+	  test = reports.createTest("API resource/nodes/get/0" +" TC"+count);
+	  count++;
 	 //DB****************************************************
 	  
 	 /* String query="SELECT distinct\r\n" + 
@@ -272,6 +275,7 @@ public class E4_resource_nodes_get {
  @AfterClass
  public void teardown()
  {
+	 reports.removeTest(test);
 	  reports.flush();
 	/* try {
 		con.close();

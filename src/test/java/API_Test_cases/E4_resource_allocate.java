@@ -1,4 +1,4 @@
-package API_Test_cases;
+  package API_Test_cases;
 
 import static com.jayway.restassured.RestAssured.given;
 
@@ -37,6 +37,7 @@ public class E4_resource_allocate
 	static int i;
 	static int j=0;
 	int row =1;int col =0;
+	int count=1;
 	
 	Statement stmt;
 	ResultSet rs;
@@ -64,21 +65,23 @@ public class E4_resource_allocate
   @BeforeMethod
 	public void init(Method method)
 	{
-		testCaseName =method.getName();
+	/*	testCaseName =method.getName();*/
 		Log.startLogForThisCase(testCaseName);
-		if(reports!=null)
+	/*	if(reports!=null)
 		{
 		test=reports.createTest(testCaseName);
 		//System.out.println("Report created");
 		}
 		else System.out.println("reports obj is null");
-		
+		*/
 	}
 
 
   @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
   public void postString(Hashtable <String,String> TestData) 
   {
+	  test = reports.createTest("API resource/allocate/0 TC"+count);
+	  count++;
 	  
   String userCode=TestData.get("userCode");
   String allocateMembers=TestData.get("allocateMembers");
@@ -303,6 +306,7 @@ public class E4_resource_allocate
  @AfterClass
  public void teardown()
  {
+	 reports.removeTest(test);
 	  reports.flush();
 	 try {
 		Dbconnection.con.close();

@@ -4,7 +4,6 @@
   <test thread-count="5" name="Test">
     <classes>
       <class name="API_Test_cases.E4_resource_allocate"/>
-      <class name="API_Test_cases.E4_resource_get_users"/>
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->

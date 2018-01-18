@@ -128,7 +128,7 @@ public class E4_resource_get_users {
 	 test.info("API RESPONSE TIME "+Integer.toString(time)+"ms");
 	 IOExcel.setExcelStringData(row,col,Integer.toString(time),"Sheet2");
 	 col++;
-	 if(res.statusCode()==200)
+	 /*if(res.statusCode()==200)
 	 {
 		 test.pass("Test Case Passed  ");
 	 }
@@ -136,7 +136,7 @@ public class E4_resource_get_users {
 	 {
 		 test.fail("Test failed due to error code "+res.statusCode());
 		 Assert.assertEquals(res.statusCode(), 200);
-	 }
+	 }*/
 	 Assert.assertTrue(res.statusCode()==200);
 	 int jsoncol=col;
 	 
@@ -209,10 +209,34 @@ public class E4_resource_get_users {
 			 //reset the col back
 			 col=jsoncol;
 			 row++;
+			 System.out.println("inside json extraction loop "+row);
 		 }
 	 }
 	
 	// Arrays.sort(apiarr);
+	// Arrays.sort(apiarr, (a, b) -> String.compare(a[0], b[0]));
+	/* Arrays.sort(apiarr, new Comparator<Object[]>() {
+	       			@Override
+			public int compare(Object[] o1, Object[] o2) {
+	       				String a1= o1.toString();
+	       				String a2=o2.toString();
+				
+	       		return a1.compareTo(a2);
+	       				
+			}
+	    });*/
+	 
+	 Arrays.sort(apiarr, new Comparator<Object[]>() {
+			@Override
+                     //arguments to this method represent the arrays to be sorted   
+			public int compare(Object[] o1, Object[] o2) {
+                             //get the item ids which are at index 0 of the array
+				Object itemIdOne = o1[0];
+				Object itemIdTwo = o2[0];
+				// sort on item id
+				return ((String) itemIdOne).compareTo((String) itemIdTwo);
+			}
+		});
 	 //print apiarr
 	 	/*for(int i=0;i<jsonarrcount;i++)
 		{
@@ -296,14 +320,18 @@ public class E4_resource_get_users {
 					System.out.println("Total Rows "+counter);
 				
 					//*******sorting array***************
-					/* Arrays.sort(dbarr, new Comparator<String[]>() {
-				            @Override
-				            public int compare(final String[] entry1, final String[] entry2) {
-				                final String time1 = entry1[0];
-				                final String time2 = entry2[0];
-				                return time1.compareTo(time2);
-				            }
-				        });*/
+					Arrays.sort(dbarr, new Comparator<Object[]>() {
+						@Override
+			                     //arguments to this method represent the arrays to be sorted   
+						public int compare(Object[] o1, Object[] o2) {
+			                             //get the item ids which are at index 0 of the array
+							Object itemIdOne = o1[0];
+							Object itemIdTwo = o2[0];
+							// sort on item id
+							return ((String) itemIdOne).compareTo((String) itemIdTwo);
+						}
+					});
+					
 					 
 					 
 					
@@ -337,12 +365,12 @@ public class E4_resource_get_users {
 								int apival=(int)apiarr[i][z];
 								if(dbval!=apival)
 								{
-									test.warning("Mismatch db "+dbarr[i][z]+" API "+apiarr[i][z]);
+									test.warning("Mismatch db "+dbarr[i][z]+" API "+apiarr[i][z]+"in Record number"+counter);
 									status=false;
 								}
 								else
 								{
-									System.out.println("matched");
+									//System.out.println("matched");
 									
 								}
 							}
@@ -352,11 +380,11 @@ public class E4_resource_get_users {
 								String apivalue=(String) apiarr[i][z];
 								if(dbvalue.equalsIgnoreCase(apivalue))
 								{
-									System.out.println("matched");	
+									//System.out.println("matched");	
 								}
 								else
 								{
-									test.warning("Mismatch db "+dbarr[i][z]+" API "+apiarr[i][z]);
+									test.warning("Mismatch db "+dbarr[i][z]+" API "+apiarr[i][z]+"in Record number"+counter);
 									status=false;
 									
 									

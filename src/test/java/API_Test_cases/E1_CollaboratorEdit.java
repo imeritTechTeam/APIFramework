@@ -1,4 +1,4 @@
-  package API_Test_cases;
+package API_Test_cases;
 
 import static com.jayway.restassured.RestAssured.given;
 
@@ -8,6 +8,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
@@ -31,13 +33,12 @@ import Utilities.Dbconnection;
 import Utilities.ExtentManager;
 import Utilities.PathUtility;
 
-public class E4_resource_allocate 
+public class E1_CollaboratorEdit 
 {
 	
 	static int i;
 	static int j=0;
 	int row =1;int col =0;
-	int count=1;
 	
 	Statement stmt;
 	ResultSet rs;
@@ -54,79 +55,68 @@ public class E4_resource_allocate
 	}
 
   @BeforeClass
-  public void setBaseUri () {
+  public void setBaseUri () 
+  {
 
-	  reports = ExtentManager.GetExtent("http://34.214.158.70:32845/impp/imerit/resource/allocate/new/0");
-	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/resource/allocate/new/0"; //ITEST
-	  Log.startLogForThisCase("API Testing Resource /resource/allocate/");
-	  IOExcel.excelSetup(PathUtility.BaseFilepath+"E4_resoure_allocate.xlsx");
-	  
+	  reports = ExtentManager.GetExtent("http://34.214.158.70:32855/impp/imerit/collaborator/edit/0");
+	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/collaborator/edit/0"; //ITEST API uri will start from 'imerit'
+	  Log.startLogForThisCase("API Testing Resource collaborator/edit");
+	  IOExcel.excelSetup(PathUtility.BaseFilepath+"E1_CollaboratorEdit.xlsx");
+	  System.out.println(RestAssured.baseURI);
   }
   @BeforeMethod
 	public void init(Method method)
 	{
-	/*	testCaseName =method.getName();*/
+		testCaseName =method.getName();
 		Log.startLogForThisCase(testCaseName);
-	/*	if(reports!=null)
+		if(reports!=null)
 		{
 		test=reports.createTest(testCaseName);
 		//System.out.println("Report created");
 		}
 		else System.out.println("reports obj is null");
-		*/
+		
 	}
 
 
   @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
   public void postString(Hashtable <String,String> TestData) 
   {
-	  test = reports.createTest("API resource/allocate/0 Test Case: "+count);
-	  count++;
-	  
+ SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+ Date date = new Date();    
   String userCode=TestData.get("userCode");
-  String allocateMembers=TestData.get("allocateMember");
-  //System.out.println("allocatememner"+allocateMembers);
-  String unAllocateMembers=TestData.get("unAllocateMembers");
-  String nodeId=TestData.get("nodeId");
+  String memberCode=TestData.get("memberCode");
   String engagementDetailCode=TestData.get("engagementDetailCode");
+  String roleParameter=TestData.get("roleParameter");
+
+ 
   String jsonreq;
 	  
-	  if(unAllocateMembers.isEmpty())
-	  {
 	  jsonreq="{\"userCode\":\""+userCode+"\","
-	    	    +"\"allocateMembers\":[\""+allocateMembers+"\"],"
-	    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
-	    	    +"\"nodeId\":\""+nodeId+"\","
-	    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}" ;
-	  }
-	  else
-	  {
-		  jsonreq="{\"userCode\":\""+userCode+"\","
-		    	    +"\"allocateMembers\":[],"
-		    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
-		    	    +"\"nodeId\":\""+nodeId+"\","
-		    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}" ;
-	  }
-	
+			  +"\"memberCode\":\""+memberCode+"\","
+			  +"\"engagementDetailCode\":\""+engagementDetailCode+"\","
+	    	    +"\"roleParameter\":\""+roleParameter+"\"}";
+	    	  
 	  
-	 test.info("Starting API 34.214.158.70:32845/impp/imerit/resource/allocate/0");
+	 test.info("Starting API 34.214.158.70:32855/impp/imerit/collaborator/edit/0");
 	 
 	Response res  =
     given()//.log().all()
-   /* .body ("{\"userCode\":\"techteam@imerit.net\","
-    +"\"memberCode\":\"animesh@imerit.net\"}"
-    )*/
-    .body (jsonreq)
-    .when ()
+    .body(jsonreq)
+    .when()
     .contentType (ContentType.JSON)
-    .post ()
-    .then()
+    .post();
+   
+	String message = res.then()
     .contentType(ContentType.JSON)
-    .extract()
-	.response();
+    .extract().asString();
+	
+	System.out.println(message);
+	
 	 
 	
-	 test.info(jsonreq);
+	test.info(jsonreq);
+
 	 System.out.println(jsonreq);
 	 
 	
@@ -136,7 +126,7 @@ public class E4_resource_allocate
 	 IOExcel.setExcelStringData(row, col, res.statusLine(), "Sheet2");
 	 test.info("Status code "+res.statusLine());
 	 col++;
-	 System.out.println ("JSON Response "+res.asString());
+	 System.out.println (res.asString());
 	 IOExcel.setExcelStringData(row, col, res.asString(), "Sheet2"); 
 	 test.info("JSON RESPONSE "+res.asString());
 	 col++;
@@ -150,10 +140,10 @@ public class E4_resource_allocate
 	 row++;
 	 
 	 
-	 /*if(res.statusCode()!=200)
+	 if(res.statusCode()!=200)
 	 {
 		  test.fail("Test failed due to error code "+res.statusCode());
-	 }*/
+	 }
 	
   
 	
@@ -215,47 +205,52 @@ public class E4_resource_allocate
 	  
 	  String usermail;
 	  
-	  if(allocateMembers.isEmpty()) //For situations where we only allocate and deallocate mails are null. or vice versa
-	  {
-		  usermail=unAllocateMembers ;
-	  }
-	  else
-	  {
-		  usermail=allocateMembers;
-	  }
-	  
-	  
-	  String query="select distinct\r\n" + 
-	  		"d.email,\r\n" + 
-	  		"a.engagement_detail_code,\r\n" + 
-	  		"c.*,\r\n" + 
-	  		"b.id as flowid\r\n" + 
-	  		"from live_2912.impp_project_engagement_detail a ,live_2912.impp_project_engagement_flow b,\r\n" + 
-	  		"live_2912.impp_engagement_allocation c,live_2912.impp_member d\r\n" + 
-	  		"where a.engagement_detail_code='"+engagementDetailCode+"'\r\n" + 
-	  		"and b.engagement_detail_id=a.id and c.engagement_flow_id =b.id\r\n" + 
+	  String query="select c.user_code,a.is_active,\r\n" + 
+	  		"\r\n" + 
+	  		"json_extract(a.role_parameter, '$.write'),\r\n" + 
+	  		"b.engagement_detail_code ,\r\n" + 
+	  		"a.start_date,\r\n" + 
+	  		"a.end_date\r\n" + 
+	  		"from live_2912.impp_project_engagement_role_tr a,\r\n" + 
+	  		"live_2912.impp_project_engagement_detail b,\r\n" + 
+	  		"live_2912.impp_user_auth c,\r\n" + 
+	  		"live_2912.impp_member d\r\n" + 
+	  		"where a.user_id=c.id\r\n" + 
+	  		"and b.id=a.engagement_detail_id\r\n" + 
 	  		"and c.member_id=d.id\r\n" + 
-	  		"and c.is_active in (1)\r\n" + 
-	  		"and d.email in ('"+usermail+"') \r\n" + 
-	  		"and c.node_cid in ('"+nodeId+"')";
+	  		 "and b.engagement_detail_code in ('"+engagementDetailCode+"')\r\n" + 
+	  		 "and c.user_code=('"+memberCode+"')\r\n" + 
+	  		"and a.is_active=1" ;
+	   
 	  
-	  
-	  //	System.out.println(query);
+	  /*String query="select c.user_code,a.role_parameter,b.engagement_detail_code from live_2912.impp_project_engagement_role_tr a,\r\n" + 
+	  "live_2912.impp_project_engagement_detail b,\r\n" + 
+	  "live_2912.impp_user_auth c,\r\n" + 
+	  "live_2912.impp_member d\r\n" + 
+	  "where a.user_id=c.id\r\n" + 
+	  "and b.id=a.engagement_detail_id\r\n" + 
+	  "and c.member_id=d.id\r\n" + 
+	  "and b.engagement_detail_code in ('"+engagementDetailCode+"')\r\n" + 
+	  "and c.user_code=('"+memberCode+"')\r\n"; */ 
+	  int is_active=0;
+	  String role_parameter = null;
+	  	 System.out.println(query);
 		try {
 			stmt=Dbconnection.con.createStatement(); 
 			rs=stmt.executeQuery(query);
-			//System.out.println("Query Executed");
+			
 			resultsetnotempty =rs.next();
 				if(resultsetnotempty)
 				{
-				/*System.out.println("email "+rs.getString(1)+" "
-									+"engagement_code "+rs.getString(2)+" "
-									+"node_cid "+rs.getString(5)+" "
-									+"start_date "+rs.getDate(7)+" "
-									+"end_date "+rs.getDate(8)+" "
-									+"is_active "+rs.getInt(9)
-						);*/
-					System.out.println("Sql query executed");
+					is_active=rs.getInt(2);
+					role_parameter=rs.getString(3);
+				System.out.println("user_code "+rs.getString(1)+" "
+									+"is_active "+rs.getInt(2)+" "
+									+"role_parameter "+rs.getString(3)+" "
+									+"engagement_detail_code "+rs.getString(4)	
+									
+						          );
+				System.out.println("Query Executed");
 				}
 				else System.out.println("No row returned by sql query");
 		
@@ -269,34 +264,26 @@ public class E4_resource_allocate
 	  //DB ENDS*******************************************
 		//Assertion
 		try {
-			
-			
-			if(res.statusCode()==200)
+			if(resultsetnotempty)
 			{
-				if((unAllocateMembers.isEmpty())&&(rs.getInt(9)==1)&&(rs.getDate(8)==null)) //if allocation call
-					{
-						test.pass("Resource assigned succesfull . In db \"is_active\" is changed to "+rs.getInt(9)+" and \"end_date\"="+rs.getDate(8));
-					}
-				else if((allocateMembers.isEmpty())&&(resultsetnotempty==false)&&(res.statusCode()==200)) //if unallocate call
-					{
-						test.pass("Resource Unassign succesfull ");
-					}
-				else 
-					{
-						test.fail("Test Failed");
-						
-					}
-			}
-			else
-			{
+			if((is_active==1)&&(role_parameter.equalsIgnoreCase("true")&&roleParameter.equalsIgnoreCase("write"))) //if allocation call
+				{
+					
+					test.pass("Collaborator Write permission granted . In db \"role_parameter\" is changed to "+role_parameter+" and \"is_active\"="+is_active);
+				}
+			else if((is_active==1)&&(role_parameter.equalsIgnoreCase("false")&&roleParameter.equalsIgnoreCase("read")))
+				{
 				
-					test.fail("Test Failed due to status code"+res.statusCode());
+				test.pass("Collaborator Read permission granted. In db \"role_parameter\" is changed to "+role_parameter+" and \"is_active\"="+is_active);
+				}
+			}
+			else 
+			{
+				test.fail("Test Failed...");
 				
 			}
 			
-			
-			
-		} catch (SQLException e) {
+		} catch (Exception e) {
 		
 			e.printStackTrace();
 		}
@@ -306,7 +293,6 @@ public class E4_resource_allocate
  @AfterClass
  public void teardown()
  {
-	// reports.removeTest(test);
 	  reports.flush();
 	 try {
 		Dbconnection.con.close();

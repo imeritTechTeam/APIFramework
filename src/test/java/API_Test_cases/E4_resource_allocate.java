@@ -56,7 +56,7 @@ public class E4_resource_allocate
   @BeforeClass
   public void setBaseUri () {
 
-	  reports = ExtentManager.GetExtent("http://34.214.158.70:32845/impp/imerit/resource/allocate/new/0");
+	  reports = ExtentManager.GetExtent(PathUtility.BaseUrl+"imerit/resource/allocate/new/0");
 	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/resource/allocate/new/0"; //ITEST
 	  Log.startLogForThisCase("API Testing Resource /resource/allocate/");
 	  IOExcel.excelSetup(PathUtility.BaseFilepath+"E4_resoure_allocate.xlsx");

@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
+import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -76,46 +77,41 @@ public class E1_ChangePassword
 	}
 
 
-  @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
+@SuppressWarnings("unchecked")
+@Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
   public void postString(Hashtable <String,String> TestData) 
   {
-	  
+  JSONObject jsonreq= new JSONObject();  
   String email=TestData.get("email");
   String token=TestData.get("token");
-  String newPassword=TestData.get("newPassword");
-  
- 
-  String jsonreq;
-	  
-	  jsonreq="{\"email\":\""+email+"\","
-	    	    +"\"token\":\""+token+"\","
-	    	    +"\"newPassword\":\""+newPassword+"\"}" ;
+  String newPassword=TestData.get("newPassword");  
 	  
 	  
+	 //JSON Creation... 
+	  jsonreq.put("email",email);
+	  jsonreq.put("token",token);
+	  jsonreq.put("newPassword",newPassword);
 	 
 	  
 	 test.info("Starting API 34.214.158.70:32845/impp/imerit/auth/changepassword/0");
 	 
 	Response res  =
-    given()//.log().all()
-   /* .body ("{\"userCode\":\"techteam@imerit.net\","
-    +"\"memberCode\":\"animesh@imerit.net\"}"
-    )*/
-    .body (jsonreq)
-    .when ()
+    given()
+    .body(jsonreq)
+    .when()
     .contentType (ContentType.JSON)
-    .post ()
+    .post()
     .then()
     .contentType(ContentType.JSON)
     .extract()
 	.response();
 	 
 	
-	 test.info(jsonreq);
+	 test.info(jsonreq.toJSONString());
 	 System.out.println(jsonreq);
 	 
 	
-	IOExcel.setExcelStringData(row, col, jsonreq, "Sheet2"); 
+	IOExcel.setExcelStringData(row, col, jsonreq.toJSONString(), "Sheet2"); 
 	 col++;
 	 System.out.println ("Status code "+res.statusLine());
 	 IOExcel.setExcelStringData(row, col, res.statusLine(), "Sheet2");

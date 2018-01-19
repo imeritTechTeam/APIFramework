@@ -11,6 +11,8 @@ import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -77,46 +79,53 @@ public class E4_resource_allocate
 	}
 
 
-  @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
+  @SuppressWarnings("unchecked")
+@Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
   public void postString(Hashtable <String,String> TestData) 
   {
 	  test = reports.createTest("API resource/allocate/0 Test Case: "+count);
 	  count++;
 	  
+  JSONObject jsonreq= new JSONObject();  
+  JSONArray allocateMember= new JSONArray(); 
+  JSONArray unAllocateMembers= new JSONArray(); 
+  
   String userCode=TestData.get("userCode");
-  String allocateMembers=TestData.get("allocateMember");
-  //System.out.println("allocatememner"+allocateMembers);
-  String unAllocateMembers=TestData.get("unAllocateMembers");
+  String allocateMem=TestData.get("allocateMember");
+  String unAllocateMem=TestData.get("unAllocateMembers");
   String nodeId=TestData.get("nodeId");
   String engagementDetailCode=TestData.get("engagementDetailCode");
-  String jsonreq;
-	  
-	  if(unAllocateMembers.isEmpty())
+  
+  //JSON Creation
+  
+  jsonreq.put("userCode",userCode);
+  jsonreq.put("nodeId",nodeId);
+  jsonreq.put("engagementDetailCode",engagementDetailCode);
+  
+	  if(unAllocateMem.isEmpty())
 	  {
-	  jsonreq="{\"userCode\":\""+userCode+"\","
-	    	    +"\"allocateMembers\":[\""+allocateMembers+"\"],"
-	    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
-	    	    +"\"nodeId\":\""+nodeId+"\","
-	    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}" ;
+		  allocateMember.add(allocateMem);
+		  unAllocateMembers.add(unAllocateMem);
+	  
 	  }
 	  else
 	  {
-		  jsonreq="{\"userCode\":\""+userCode+"\","
-		    	    +"\"allocateMembers\":[],"
-		    	    +"\"unAllocateMembers\":[\""+unAllocateMembers+"\"],"
-		    	    +"\"nodeId\":\""+nodeId+"\","
-		    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}" ;
+		  
+		  unAllocateMembers.add(unAllocateMem);
 	  }
-	
-	  
-	 test.info("Starting API 34.214.158.70:32845/impp/imerit/resource/allocate/0");
 	 
+	  //Adding JSONArray 
+	  
+	  jsonreq.put("allocateMember",allocateMember);
+	  jsonreq.put("unAllocateMembers",unAllocateMembers);
+	 
+	  test.info("Starting API 34.214.158.70:32845/impp/imerit/resource/allocate/0");
+	
+	  //API Execution...
+	  
 	Response res  =
-    given()//.log().all()
-   /* .body ("{\"userCode\":\"techteam@imerit.net\","
-    +"\"memberCode\":\"animesh@imerit.net\"}"
-    )*/
-    .body (jsonreq)
+    given()
+    .body(jsonreq)
     .when ()
     .contentType (ContentType.JSON)
     .post ()
@@ -125,12 +134,14 @@ public class E4_resource_allocate
     .extract()
 	.response();
 	 
+	//Adding Created JSON in Report 
 	
-	 test.info(jsonreq);
+	 test.info(jsonreq.toJSONString());
 	 System.out.println(jsonreq);
 	 
-	
-	IOExcel.setExcelStringData(row, col, jsonreq, "Sheet2"); 
+	//Writing Response to Excel 
+	 
+	IOExcel.setExcelStringData(row, col, jsonreq.toJSONString(), "Sheet2"); 
 	 col++;
 	 System.out.println ("Status code "+res.statusLine());
 	 IOExcel.setExcelStringData(row, col, res.statusLine(), "Sheet2");
@@ -215,13 +226,13 @@ public class E4_resource_allocate
 	  
 	  String usermail;
 	  
-	  if(allocateMembers.isEmpty()) //For situations where we only allocate and deallocate mails are null. or vice versa
+	  if(allocateMem.isEmpty()) //For situations where we only allocate and deallocate mails are null. or vice versa
 	  {
-		  usermail=unAllocateMembers ;
+		  usermail=unAllocateMembers.toString() ;
 	  }
 	  else
 	  {
-		  usermail=allocateMembers;
+		  usermail=allocateMem.toString();
 	  }
 	  
 	  
@@ -277,7 +288,7 @@ public class E4_resource_allocate
 					{
 						test.pass("Resource assigned succesfull . In db \"is_active\" is changed to "+rs.getInt(9)+" and \"end_date\"="+rs.getDate(8));
 					}
-				else if((allocateMembers.isEmpty())&&(resultsetnotempty==false)&&(res.statusCode()==200)) //if unallocate call
+				else if((allocateMem.isEmpty())&&(resultsetnotempty==false)&&(res.statusCode()==200)) //if unallocate call
 					{
 						test.pass("Resource Unassign succesfull ");
 					}

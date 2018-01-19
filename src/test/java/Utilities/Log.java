@@ -3,6 +3,7 @@
  */
 package Utilities;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 /**
@@ -15,6 +16,8 @@ public class Log {
 	
 	public static void startLogForThisCase(String testCaseName)
 	{
+		BasicConfigurator.configure();
+	    log.debug("Hello World!");
 		Log.info("****************************************************************************************");
 	    Log.info("****************************************************************************************");
 	    Log.info("$$$$$$$$$$$$$$$$$$$$$      Test Case: "+testCaseName + "       $$$$$$$$$$$$$$$$$$$$$$$$$");

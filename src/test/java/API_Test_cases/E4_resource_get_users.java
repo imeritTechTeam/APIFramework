@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
+import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -42,7 +43,7 @@ public class E4_resource_get_users {
 	Statement stmt;
 	ResultSet rs ;
 	int counter=0;
-
+	JSONObject jsonreq= new JSONObject();
 
 	
 	//Starts the database connection
@@ -78,27 +79,35 @@ public class E4_resource_get_users {
  		
  	}
 
-  @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
+  @SuppressWarnings("unchecked")
+@Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
   public void postString (Hashtable<String,String> TestData) 
 	{
+	  //Reading data from Excel 
+	  String userCode=TestData.get("userCode");
+	  String memberCode=TestData.get("memberCode");
+	  String engagementDetailCode=TestData.get("engagementDetailCode");
+	  String nodeId=TestData.get("nodeId");
+	  
+	  //Create Report
 	  test = reports.createTest("API /resource/get/users/0 TC"+count);
 	  count++;
-	  String userCode=TestData.get("userCode");
-	  String engagementDetailCode=TestData.get("engagementDetailCode");
-	  String nodeId=TestData.get("nodeId"); 
 	  
-	  
+	  //Add info
 	  test.info("Starting API http://34.214.158.70:32845/impp/imerit/resource/get/users/0");
-	//"http://34.214.158.70:32845/impp/imerit/action/access/0"
+	  
+	  //Json Create...
+	  
+	  jsonreq.put("userCode",userCode);
+	  jsonreq.put("memberCode",memberCode);
+	  jsonreq.put("engagementDetailCode",engagementDetailCode);
+	  jsonreq.put("nodeId",nodeId);
+	  
+	 //API Execution...
+	  
 	 Response res  =
-    given()//.log().all()
-   /* .body ("{\"userCode\":\"techteam@imerit.net\","
-    +"\"memberCode\":\"animesh@imerit.net\"}"
-    )*/
-    .body ("{\"userCode\":\""+userCode+"\","
-    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\","  	    
-    	    +"\"nodeId\":\""+nodeId+"\"}"
-    	   )
+     given()
+    .body (jsonreq)
     .when ()
     .contentType (ContentType.JSON)
     .post ()
@@ -107,14 +116,11 @@ public class E4_resource_get_users {
     .extract()
 	.response();
 	 
-	
+	//Adding Created JSON in Report 
+	 test.info(jsonreq.toJSONString());
 	 
-	 test.info("{\"userCode\":\""+userCode+"\","
-	    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\","  	    
-	    	    +"\"nodeId\":\""+nodeId+"\",}");
-	 IOExcel.setExcelStringData(row, col, "{\"userCode\":\""+userCode+"\","
-	    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\","  	    
-	    	    +"\"nodeId\":\""+nodeId+"\",}", "Sheet2"); 
+	//Writing data to Excel 
+	 IOExcel.setExcelStringData(row, col, "jsonreq.toJSONString()", "Sheet2"); 
 	 col++;
 	 System.out.println ("Status code "+res.statusLine());
 	 test.info("Status Code "+res.statusLine());
@@ -123,20 +129,14 @@ public class E4_resource_get_users {
 	/* System.out.println (res.asString());
 	 IOExcel.setExcelStringData(row, col, res.asString(), "Sheet2"); 
 	 col++;*/
+	 
+
 	 test.info("JSON RESPONSE "+res.asString());
 	 int time = (int)res.getTimeIn(TimeUnit.MILLISECONDS);
 	 test.info("API RESPONSE TIME "+Integer.toString(time)+"ms");
 	 IOExcel.setExcelStringData(row,col,Integer.toString(time),"Sheet2");
 	 col++;
-	 /*if(res.statusCode()==200)
-	 {
-		 test.pass("Test Case Passed  ");
-	 }
-	 else
-	 {
-		 test.fail("Test failed due to error code "+res.statusCode());
-		 Assert.assertEquals(res.statusCode(), 200);
-	 }*/
+	
 	 Assert.assertTrue(res.statusCode()==200);
 	 int jsoncol=col;
 	 
@@ -145,7 +145,8 @@ public class E4_resource_get_users {
 	 //json detail extraction
 	 
 	// System.out.println("Json array count "+res.body().path("$.size()"));
-	int jsonarrcount =res.body().path("$.size()");
+	
+	 int jsonarrcount =res.body().path("$.size()");
 	
 	Object[][] apiarr = new Object[jsonarrcount][8];
 	

@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
+import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -79,29 +80,32 @@ public class E1_CollaboratorEdit
 	}
 
 
-  @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
+@SuppressWarnings("unchecked")
+@Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
   public void postString(Hashtable <String,String> TestData) 
   {
  SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
- Date date = new Date();    
+ Date date = new Date();  
+ 
+ //Reading data from Excel
   String userCode=TestData.get("userCode");
   String memberCode=TestData.get("memberCode");
   String engagementDetailCode=TestData.get("engagementDetailCode");
   String roleParameter=TestData.get("roleParameter");
 
- 
-  String jsonreq;
-	  
-	  jsonreq="{\"userCode\":\""+userCode+"\","
-			  +"\"memberCode\":\""+memberCode+"\","
-			  +"\"engagementDetailCode\":\""+engagementDetailCode+"\","
-	    	    +"\"roleParameter\":\""+roleParameter+"\"}";
-	    	  
-	  
-	 test.info("Starting API 34.214.158.70:32855/impp/imerit/collaborator/edit/0");
+  JSONObject jsonreq= new JSONObject();
+  jsonreq.put("userCode",userCode);
+  jsonreq.put("memberCode",memberCode);
+  jsonreq.put("engagementDetailCode",engagementDetailCode);
+  jsonreq.put("roleParameter",roleParameter);
+      	  
+  System.out.println(jsonreq);  
 	 
+  test.info("Starting API 34.214.158.70:32855/impp/imerit/collaborator/edit/0");
+	 
+	//API Execution...
 	Response res  =
-    given()//.log().all()
+    given()
     .body(jsonreq)
     .when()
     .contentType (ContentType.JSON)
@@ -111,16 +115,15 @@ public class E1_CollaboratorEdit
     .contentType(ContentType.JSON)
     .extract().asString();
 	
+	//Response print on console
 	System.out.println(message);
 	
 	 
+	//Adding JSON in TestReport
+	test.info(jsonreq.toJSONString());
+ 
 	
-	test.info(jsonreq);
-
-	 System.out.println(jsonreq);
-	 
-	
-	IOExcel.setExcelStringData(row, col, jsonreq, "Sheet2"); 
+	IOExcel.setExcelStringData(row, col, jsonreq.toJSONString(), "Sheet2"); 
 	 col++;
 	 System.out.println ("Status code "+res.statusLine());
 	 IOExcel.setExcelStringData(row, col, res.statusLine(), "Sheet2");

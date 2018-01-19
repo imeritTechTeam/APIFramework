@@ -17,8 +17,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
+import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -35,6 +37,7 @@ import com.jayway.restassured.response.Response;
 import Utilities.ExtentManager;
 import Utilities.IOExcel;
 import Utilities.Log;
+import Utilities.PathUtility;
 
 public class E4_resource_nodes_get {
 	
@@ -49,15 +52,15 @@ public class E4_resource_nodes_get {
 	ExtentReports reports;
 	ExtentTest test;
 	String testCaseName;
+	JSONObject jsonreq= new JSONObject();  
 
   @BeforeClass
   public void setBaseUri () {
 
 	  reports = ExtentManager.GetExtent("API Test Results of http://34.214.158.70:32845/impp/imerit/resource/nodes/get/0");
-	  RestAssured.baseURI="http://34.214.158.70:32845/impp/imerit/resource/nodes/get/0";
-	  Log.startLogForThisCase("API Testing Resource resource/user/details");
-	  String Basepath="D:\\testdata\\API\\";
-	  IOExcel.excelSetup(Basepath+"E4_resource_nodes_get.xlsx");
+	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/resource/nodes/get/0"; //ITEST
+	  Log.startLogForThisCase("API Testing Resource resource/nodes/get");
+	  IOExcel.excelSetup(PathUtility.BaseFilepath+"E4_resource_nodes_get.xlsx");
 	  
 	 /* try{  
 		  Class.forName("com.mysql.cj.jdbc.Driver");  
@@ -86,86 +89,41 @@ public class E4_resource_nodes_get {
 		
 	}
 
+@SuppressWarnings("unchecked")
+@Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
 
-  @Test(dataProvider="DataSource")
-
-  public void postString (String userCode,String engagementDetailCode ) 
+  public void postString (Hashtable<String,String> TestData) 
 	{
 	  test = reports.createTest("API resource/nodes/get/0" +" TC"+count);
 	  count++;
-	 //DB****************************************************
 	  
-	 /* String query="SELECT distinct\r\n" + 
-	  		"a.node_cid,\r\n" + 
-	  		"JSON_EXTRACT(efj.flow_data, \"$.flow.flowBuilder\") cid\r\n" + 
-	  		"\r\n" + 
-	  		"FROM impp_demo_v2_09122017.impp_engagement_allocation a ,impp_demo_v2_09122017.impp_employee b,impp_demo_v2_09122017.impp_member c,\r\n" + 
-	  		"impp_demo_v2_09122017.impp_member_branch_tr d,impp_demo_v2_09122017.impp_branch e,\r\n" + 
-	  		"impp_demo_v2_09122017.impp_member_dept_desig_tr f,impp_demo_v2_09122017.impp_department g\r\n" + 
-	  		",impp_demo_v2_09122017.impp_project_engagement_flow h,impp_demo_v2_09122017.impp_project_engagement_detail i,\r\n" + 
-	  		"impp_demo_v2_09122017.impp_project pr ,impp_demo_v2_09122017.impp_project_engagement pe ,impp_project_engagement_flow_json efj\r\n" + 
-	  		"\r\n" + 
-	  		"WHERE \r\n" + 
-	  		"b.member_id=c.id and c.id = a.member_id and b.member_id=d.member_id and e.id =d.branch_id and a.member_id=f.member_id\r\n" + 
-	  		"and g.id=f.department_id and h.id=a.engagement_flow_id and i.id=h.engagement_detail_id  \r\n" + 
-	  		"and pr.id=i.project_id  and pe.id=i.engagement_type_id and efj.engagement_flow_id=a.engagement_flow_id and\r\n" + 
-	  		"i.engagement_detail_code='"+engagementDetailCode+"' \r\n" + 
-	  		"\r\n" + 
-	  		"order by a.node_cid\r\n"  
-	  		;
+	  //Reading Data from Excel
 	  
-	 // System.out.println(query);
-	  try {
-		  
-		 stmt=con.createStatement();  
-		 rs=stmt.executeQuery(query);  
-		  System.out.println("Query Executed");
-		  while(rs.next())  
-		  {
-			  r++;
-			//  System.out.println(rs.getString(1)+"  "+rs.getString(2));
-			  IOExcel.setExcelStringData(r, c, rs.getString(1).toString(), "Sheet3");
-			  c++;
-			  IOExcel.setExcelStringData(r, c, rs.getString(2).toString(), "Sheet3");
-			  c++;
-			  if(c>1)
-			  {
-				  c=0;
-				  r++;
-			  }
-			  
-		  }
-	} catch (Exception e) {
-		
-		System.out.println(e);
-	}  
-	  */
+	  String userCode=TestData.get("userCode");
+	  String engagementDetailCode=TestData.get("engagementDetailCode");
 	  
-	 //****************************************************** 
 	  test.info("Starting API http://34.214.158.70:32845/impp/imerit/resource/nodes/get/0");
-	//"http://34.214.158.70:32845/impp/imerit/action/access/0"
-	 Response res  =
-    given()//.log().body()
-   /* .body ("{\"userCode\":\"techteam@imerit.net\","
-    +"\"memberCode\":\"animesh@imerit.net\"}"
-    )*/
-    .body ("{\"userCode\":\""+userCode+"\","
-    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}"
-    	   )
+	
+	//JSON Creation
+	  jsonreq.put("userCode", userCode);
+	  jsonreq.put("engagementDetailCode", engagementDetailCode);
+	 
+	//API Execution...
+	Response res  =
+    given()
+    .body(jsonreq)
     .when ()
     .contentType (ContentType.JSON)
-    .post ()
+    .post()
     .then()
     .contentType(ContentType.JSON)
     .extract()
 	.response();
 	 
-	
+	 test.info(jsonreq.toJSONString());
 	 
-	 test.info("JSON REQUEST: "+"{\"userCode\":\""+userCode+"\","
-	    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}");
-	 IOExcel.setExcelStringData(row, col, "{\"userCode\":\""+userCode+"\","
-	    	    +"\"engagementDetailCode\":\""+engagementDetailCode+"\"}", "Sheet2"); 
+	 //Writing API Response to Excel
+	 IOExcel.setExcelStringData(row, col, jsonreq.toJSONString(), "Sheet2"); 
 	 col++;
 	 System.out.println ("Status code "+res.statusLine());
 	 test.info("Status Code "+res.statusLine());
@@ -238,40 +196,60 @@ public class E4_resource_nodes_get {
 		 col=0;
 		 System.out.println("row "+row);
 		 
-		 
+
+		 //DB****************************************************
+		  
+		 /* String query="SELECT distinct\r\n" + 
+		  		"a.node_cid,\r\n" + 
+		  		"JSON_EXTRACT(efj.flow_data, \"$.flow.flowBuilder\") cid\r\n" + 
+		  		"\r\n" + 
+		  		"FROM impp_demo_v2_09122017.impp_engagement_allocation a ,impp_demo_v2_09122017.impp_employee b,impp_demo_v2_09122017.impp_member c,\r\n" + 
+		  		"impp_demo_v2_09122017.impp_member_branch_tr d,impp_demo_v2_09122017.impp_branch e,\r\n" + 
+		  		"impp_demo_v2_09122017.impp_member_dept_desig_tr f,impp_demo_v2_09122017.impp_department g\r\n" + 
+		  		",impp_demo_v2_09122017.impp_project_engagement_flow h,impp_demo_v2_09122017.impp_project_engagement_detail i,\r\n" + 
+		  		"impp_demo_v2_09122017.impp_project pr ,impp_demo_v2_09122017.impp_project_engagement pe ,impp_project_engagement_flow_json efj\r\n" + 
+		  		"\r\n" + 
+		  		"WHERE \r\n" + 
+		  		"b.member_id=c.id and c.id = a.member_id and b.member_id=d.member_id and e.id =d.branch_id and a.member_id=f.member_id\r\n" + 
+		  		"and g.id=f.department_id and h.id=a.engagement_flow_id and i.id=h.engagement_detail_id  \r\n" + 
+		  		"and pr.id=i.project_id  and pe.id=i.engagement_type_id and efj.engagement_flow_id=a.engagement_flow_id and\r\n" + 
+		  		"i.engagement_detail_code='"+engagementDetailCode+"' \r\n" + 
+		  		"\r\n" + 
+		  		"order by a.node_cid\r\n"  
+		  		;
+		  
+		 // System.out.println(query);
+		  try {
+			  
+			 stmt=con.createStatement();  
+			 rs=stmt.executeQuery(query);  
+			  System.out.println("Query Executed");
+			  while(rs.next())  
+			  {
+				  r++;
+				//  System.out.println(rs.getString(1)+"  "+rs.getString(2));
+				  IOExcel.setExcelStringData(r, c, rs.getString(1).toString(), "Sheet3");
+				  c++;
+				  IOExcel.setExcelStringData(r, c, rs.getString(2).toString(), "Sheet3");
+				  c++;
+				  if(c>1)
+				  {
+					  c=0;
+					  r++;
+				  }
+				  
+			  }
+		} catch (Exception e) {
+			
+			System.out.println(e);
+		}  
+		  */
+		  
+		 //******************************************************  
 	
   }
 
- @DataProvider(name="DataSource")
- 
-  public static Object[][] exceldatasource()
-  {
-	 int count=IOExcel.Getrowcount("Sheet1");
-	 System.out.println("row count"+count);
-	 
-	  Object arr[][]=new Object[count][2];
-	 
-	  int n=0;int k=0;
-	
-	  for( i=1;i<=count;i++)
-	  {
-		  k=0;
-		  for( j=0;j<=1;j++)
-		  { 
-			 arr[n][k]= IOExcel.getExcelStringData(i, j,"Sheet1");
-			// System.out.println("i "+i+" j "+j+" arr[n][k]"+arr[n][k]+" n "+n+" k "+k);
-			// System.out.println("i "+i+" j "+j);
-			 k++;
-			//System.out.println(arr[n][k]);
-		  }
-		  n++;
-	  }
-	
-	  
-	  return arr;
-	
-  }
- 
+  
  @AfterClass
  public void teardown()
  {

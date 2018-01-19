@@ -6,6 +6,7 @@ This api is used to get details of a resource
 
 */
 
+import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -13,9 +14,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+
 import static com.jayway.restassured.RestAssured.*;
 
 import java.lang.reflect.Method;
+import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
 import com.aventstack.extentreports.ExtentReports;
@@ -27,6 +30,7 @@ import com.jayway.restassured.response.Response;
 import Utilities.ExtentManager;
 import Utilities.IOExcel;
 import Utilities.Log;
+import Utilities.PathUtility;
 
 public class E4_Resource_user_detail {
 	static int i;
@@ -36,14 +40,15 @@ public class E4_Resource_user_detail {
 	ExtentTest test;
 	String testCaseName;
 	int count=1;
+	JSONObject jsonreq= new JSONObject(); 
 
   @BeforeClass
   public void setBaseUri () {
 
 	  reports = ExtentManager.GetExtent("API Test Results of http://34.214.158.70:32845/impp/imerit/resource/user/details/0");
-	  RestAssured.baseURI="http://34.214.158.70:32845/impp/imerit/resource/user/details/0";
-	  Log.startLogForThisCase("Resource resource/user/details");
-	  IOExcel.excelSetup("D:\\testdata\\API\\API_resource_user_details.xlsx");
+	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/resource/user/details/0"; //ITEST
+	  Log.startLogForThisCase("Resource resource/user/details/0");
+	  IOExcel.excelSetup(PathUtility.BaseFilepath+"API_resource_user_details.xlsx");
 
 	  
   }
@@ -64,40 +69,46 @@ public class E4_Resource_user_detail {
   
 
 
-  @Test(dataProvider="DataSource")
-
-  public void postString (String userCode,String memberCode ) 
+  @SuppressWarnings("unchecked")
+  @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
+  public void postString (Hashtable<String,String> TestData) 
 	{
+	  
 	  test = reports.createTest("API resource/user/details/0 TC"+count);
 	  count++;
+	  
+	  String userCode=TestData.get("userCode");
+	  String memberCode=TestData.get("memberCode");
+	  
 	  test.info("Starting API http://34.214.158.70:32845/impp/imerit/resource/user/details/0");
-	//"http://34.214.158.70:32845/impp/imerit/action/access/0"
-	 Response res  =
-    given()//.log().all()
-   /* .body ("{\"userCode\":\"techteam@imerit.net\","
-    +"\"memberCode\":\"animesh@imerit.net\"}"
-    )*/
-    .body ("{\"userCode\":\""+userCode+"\","
-    	    +"\"memberCode\":\""+memberCode+"\"}"
-    	   )
-    .when ()
-    .contentType (ContentType.JSON)
-    .post ()
+	  
+	//JSON Creation
+	  jsonreq.put("userCode", userCode);
+	  jsonreq.put("memberCode", memberCode);  
+	
+	  System.out.println(jsonreq);
+	  
+	Response res  =
+    given()
+    .body(jsonreq)
+    .when()
+    .contentType(ContentType.JSON)
+    .post()
     .then()
     .contentType(ContentType.JSON)
     .extract()
 	.response();
 	 
-	 test.info("JSON REQUEST {\"userCode\":\""+userCode+"\","
-	    	    +"\"memberCode\":\""+memberCode+"\"}");
-	 IOExcel.setExcelStringData(row, col,"{\"userCode\":\""+userCode+"\","
-	    	    +"\"memberCode\":\""+memberCode+"\"}", "Sheet2"); 
+	 test.info("JSON REQUEST"+jsonreq.toJSONString());
+	 
+	 //Writing Data to Excel
+	 
+	 IOExcel.setExcelStringData(row, col,jsonreq.toJSONString(), "Sheet2"); 
 	 col++;
 	 System.out.println ("Status code "+res.statusLine()); //STATUS CODE
 	 test.info("Status Code "+res.statusLine());
 	 IOExcel.setExcelStringData(row, col, res.statusLine(), "Sheet2");
 	 col++;
-//	 System.out.println (res.asString()); //JSON RESPONSE
 	 test.info("JSON RESPONSE "+res.asString());
 	 IOExcel.setExcelStringData(row, col, res.asString(), "Sheet2"); 
 	 col++;
@@ -105,6 +116,8 @@ public class E4_Resource_user_detail {
 	 test.info("API RESPONSE TIME "+Integer.toString(time)+"ms");
 	 IOExcel.setExcelStringData(row,col,Integer.toString(time),"Sheet2");
 	 col++;	 
+	 
+	 System.out.println (res.asString()); //PRINT JSON RESPONSE
 	 
 	 if(res.statusCode()==200)
 	 {
@@ -149,7 +162,7 @@ public class E4_Resource_user_detail {
 	 col++;
 	 
 	 int jsoncol=col;
-	 //json detail extraction
+	 //***************json detail extraction*******************
 	 
 	// System.out.println("Json array count "+res.body().path("assignedEngagement.size()"));
 	/* System.out.println("engagementDetailCode "+res.body().path("assignedEngagement[0].engagementDetailCode"));
@@ -159,6 +172,8 @@ public class E4_Resource_user_detail {
 	 System.out.println("name "+res.body().path("assignedEngagement[0].name"));
 	 System.out.println("noOfRunningJob "+res.body().path("assignedEngagement[0].noOfRunningJob")); */
 	// System.out.println("noOfRunningJob "+res.body().path("assignedEngagement[0].allocation"));
+	
+	 //***********Writing Data to Excel************
 	 int jsonarrcount =res.body().path("assignedEngagement.size()");
 	 if(jsonarrcount==0)
 	 {
@@ -228,36 +243,6 @@ public class E4_Resource_user_detail {
 		 col=0;
 		
 		// System.out.println("row "+row);
-	
-  }
-
- @DataProvider(name="DataSource")
- 
-  public static Object[][] exceldatasource()
-  {
-	 int count=IOExcel.Getrowcount("Sheet1");
-	 System.out.println("row count"+count);
-	 
-	  Object arr[][]=new Object[count][2];
-	 
-	  int n=0;int k=0;
-	
-	  for( i=1;i<=count;i++)
-	  {
-		  k=0;
-		  for( j=0;j<=1;j++)
-		  { 
-			 arr[n][k]= IOExcel.getExcelStringData(i, j,"Sheet1");
-			// System.out.println("i "+i+" j "+j+" arr[n][k]"+arr[n][k]+" n "+n+" k "+k);
-			// System.out.println("i "+i+" j "+j);
-			 k++;
-			//System.out.println(arr[n][k]);
-		  }
-		  n++;
-	  }
-	
-	  
-	  return arr;
 	
   }
  

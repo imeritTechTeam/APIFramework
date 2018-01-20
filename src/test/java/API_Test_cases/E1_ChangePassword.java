@@ -56,6 +56,8 @@ public class E1_ChangePassword
   @BeforeClass
   public void setBaseUri () {
 
+	  
+	  //hellloooo
 	  reports = ExtentManager.GetExtent("http://34.214.158.70:32845/impp/imerit/auth/changepassword/0 ");
 	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/auth/changepassword/0"; //ITEST
 	  Log.startLogForThisCase("API Testing Resource /auth/changepassword/0");

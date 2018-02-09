@@ -50,7 +50,7 @@ public class E1_ChangePassword
 	@BeforeSuite
 	public void startup()
 	{
-		Dbconnection.dbstartup();
+		Dbconnection.dbstartup("amazon");
 	}
 
   @BeforeClass

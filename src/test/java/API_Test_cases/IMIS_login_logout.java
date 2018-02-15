@@ -1,24 +1,21 @@
-  package API_Test_cases;
+package API_Test_cases;
 
 import static com.jayway.restassured.RestAssured.given;
 
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.aventstack.extentreports.ExtentReports;
@@ -27,14 +24,13 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
-import Utilities.IOExcel;
-import Utilities.Log;
 import Utilities.Dbconnection;
 import Utilities.ExtentManager;
+import Utilities.IOExcel;
+import Utilities.Log;
 import Utilities.PathUtility;
 
-public class E4_resource_allocate 
-{
+public class IMIS_login_logout {
 	
 	static int i;
 	static int j=0;
@@ -58,68 +54,78 @@ public class E4_resource_allocate
   @BeforeClass
   public void setBaseUri () {
 
-	  reports = ExtentManager.GetExtent(PathUtility.BaseUrl+"imerit/resource/allocate/new/0");
-	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/resource/allocate/new/0"; //ITEST
-	  Log.startLogForThisCase("API Testing Resource /resource/allocate/");
-	  IOExcel.excelSetup(PathUtility.BaseFilepath+"E4_resoure_allocate.xlsx");
+	  reports = ExtentManager.GetExtent(PathUtility.BaseUrl+"impp/imerit/public/project/signin/");
+	  RestAssured.baseURI="http://34.214.158.70:32865/impp/imerit/public/project/signin/0"; //ITEST
+	//  IOExcel.excelSetup(".\\TestData\\imis.xlsx");
 	  
+	  
+	  String ExcelFile=System.getProperty("Excelfile");
+	  System.out.println("Excel file argument"+ExcelFile);
+	  IOExcel.excelSetup(".\\TestData\\"+ExcelFile+".xlsx"); 
+	  
+	 // String event=TestData.get("event");
+	 /* if(ExcelFile.contains("login1"))
+	  {
+		  IOExcel.excelSetup(".\\TestData\\loginscenario1.xlsx"); 
+	  }
+	  else if(ExcelFile.contains("login2"))
+	  {
+	  IOExcel.excelSetup(".\\TestData\\loginscenario2.xlsx");
+	  }
+	  else if(ExcelFile.contains("login3"))
+	  {
+	  IOExcel.excelSetup(".\\TestData\\loginscenario3.xlsx");
+	  }
+	  else if(ExcelFile.contains("login4"))
+	  {
+	  IOExcel.excelSetup(".\\TestData\\loginscenario4.xlsx");
+	  }
+	  else
+	  {
+		  System.out.println("Test data excel cant be opened due to incorrect/missing Maven argument");
+	  }*/
   }
-  @BeforeMethod
-	public void init(Method method)
-	{
-	/*	testCaseName =method.getName();*/
-		Log.startLogForThisCase(testCaseName);
-	/*	if(reports!=null)
-		{
-		test=reports.createTest(testCaseName);
-		//System.out.println("Report created");
-		}
-		else System.out.println("reports obj is null");
-		*/
-	}
+ 
 
 
   @SuppressWarnings("unchecked")
 @Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
   public void postString(Hashtable <String,String> TestData) 
   {
-	  test = reports.createTest("API resource/allocate/0 Test Case: "+count);
-	  count++;
+	  
+	 /* int randomNum = ThreadLocalRandom.current().nextInt(30000, 200000 );
+	  System.out.println("Sleeping for : "+randomNum);
+	  try {
+		Thread.sleep(randomNum);
+	} catch (InterruptedException e) {
+		System.out.println("Sleep issues"+e);
+	}
+	  */
 	  
   JSONObject jsonreq= new JSONObject();  
-  JSONArray allocateMember= new JSONArray(); 
-  JSONArray unAllocateMembers= new JSONArray(); 
+  //JSONArray allocateMember= new JSONArray(); 
+  //JSONArray unAllocateMembers= new JSONArray(); 
   
-  String userCode=TestData.get("userCode");
-  String allocateMem=TestData.get("allocateMember");
-  String unAllocateMem=TestData.get("unAllocateMembers");
-  String nodeId=TestData.get("nodeId");
-  String engagementDetailCode=TestData.get("engagementDetailCode");
+  String subProjectCode=TestData.get("subProjectCode");
+  String empId=TestData.get("empId");
+  String projectCode=TestData.get("projectCode");
   
+  String event=System.getProperty("event");
+  System.out.println(event);
+  
+
+  test = reports.createTest("API IMIS "+event+" "+count);
+  count++;
   //JSON Creation
   
-  jsonreq.put("userCode",userCode);
-  jsonreq.put("nodeId",nodeId);
-  jsonreq.put("engagementDetailCode",engagementDetailCode);
+  jsonreq.put("subProjectCode",subProjectCode);
+  jsonreq.put("empId",empId);
+  jsonreq.put("projectCode",projectCode);
+  jsonreq.put("event",event);
   
-	  if(unAllocateMem.isEmpty())
-	  {
-		  allocateMember.add(allocateMem);
-		  unAllocateMembers.add(unAllocateMem);
-	  
-	  }
-	  else
-	  {
-		  
-		  unAllocateMembers.add(unAllocateMem);
-	  }
+
 	 
-	  //Adding JSONArray 
-	  
-	  jsonreq.put("allocateMember",allocateMember);
-	  jsonreq.put("unAllocateMembers",unAllocateMembers);
-	 
-	  test.info("Starting API 34.214.158.70:32845/impp/imerit/resource/allocate/0");
+ test.info("Starting http://34.214.158.70:32865/impp/imerit/public/project/signin/0");
 	
 	  //API Execution...
 	  
@@ -139,104 +145,41 @@ public class E4_resource_allocate
 	 test.info(jsonreq.toJSONString());
 	 System.out.println(jsonreq);
 	 
-	//Writing Response to Excel 
+	//Writing Response to report and Console
 	 
-	IOExcel.setExcelStringData(row, col, jsonreq.toJSONString(), "Sheet2"); 
-	 col++;
-	 System.out.println ("Status code "+res.statusLine());
-	 IOExcel.setExcelStringData(row, col, res.statusLine(), "Sheet2");
+	
+	// System.out.println ("Status code "+res.statusLine());
 	 test.info("Status code "+res.statusLine());
-	 col++;
+
 	 System.out.println ("JSON Response "+res.asString());
-	 IOExcel.setExcelStringData(row, col, res.asString(), "Sheet2"); 
 	 test.info("JSON RESPONSE "+res.asString());
-	 col++;
+	
 	 int time = (int)res.getTimeIn(TimeUnit.MILLISECONDS);
 	 test.info("API Response time : "+Integer.toString(time)+" ms");
-	 IOExcel.setExcelStringData(row,col,Integer.toString(time),"Sheet2");
-	 col++;
+
+//	 System.out.println("message:"+res.body().path("message"));
+//	 System.out.println("appcode:"+res.body().path("appcode"));
 	 
-	 
-	 col=0;
-	 row++;
-	 
-	 
-	 /*if(res.statusCode()!=200)
+	 if((res.statusCode()==200)&&(res.body().path("message").toString().contains("Success")))
 	 {
-		  test.fail("Test failed due to error code "+res.statusCode());
-	 }*/
-	
-  
-	
-	 int jsoncol=col;
-	 
-	// System.out.println("nodeId"+res.body().path("[0].nodeId"));
-	// System.out.println("nodeName"+res.body().path("[0].nodeName"));
-	 //json detail extraction
-	 
-	// System.out.println("Json array count "+res.body().path("$.size()"));
-	 int jsonarrcount;
-	try {
-		jsonarrcount = res.body().path("$.size()");
-	
-	 if(jsonarrcount==0)
-	 {
-		 row++;
+		 test.pass(event+" Success");
 	 }
 	 else
 	 {
-		 for(i=0;i<jsonarrcount;i++)
-		 {
-					 
-			 String index = Integer.toString(i);
-			 String data=res.body().path("["+index+"].nodeId").toString();
-			 IOExcel.setExcelStringData(row, col, data, "Sheet2"); 
-			 col++;
-			 
-			 String data2=res.body().path("["+index+"].nodeName");
-			 IOExcel.setExcelStringData(row, col, data2, "Sheet2");	
-			 col++;
-			 
-			 try {
-				IOExcel.setExcelStringData(row, col, rs.getString(1).toString(), "Sheet2"); 
-				col++;
-				IOExcel.setExcelStringData(row, col, rs.getString(2).toString(), "Sheet2"); 
-				col++;
-			} catch (SQLException e) {
-				System.out.println(e);
-			}
-			 
-			 //reset the col back
-			 col=jsoncol;
-			 row++;
-		 }
+		 test.fail(event+" Failure");
 	 }
 	 
-	 
 	
-		 col=0;
-		 System.out.println("row "+row);
-	} catch (Exception e1) {
-		
-		System.out.println(e1);
-	}
+	 
+	 
+
 	  
 	  
 	  //DB************************************************
 	  
-	  String usermail;
+	
 	  
-	  if(allocateMem.isEmpty()) //For situations where we only allocate and deallocate mails are null. or vice versa
-	  {
-		  usermail=unAllocateMembers.toString() ;
-	  }
-	  else
-	  {
-		  usermail=allocateMem.toString();
-	  }
-	  
-	  
-	  String query="select distinct\r\n" + 
+	/*  String query="select distinct\r\n" + 
 	  		"d.email,\r\n" + 
 	  		"a.engagement_detail_code,\r\n" + 
 	  		"c.*,\r\n" + 
@@ -259,13 +202,13 @@ public class E4_resource_allocate
 			resultsetnotempty =rs.next();
 				if(resultsetnotempty)
 				{
-				/*System.out.println("email "+rs.getString(1)+" "
+				System.out.println("email "+rs.getString(1)+" "
 									+"engagement_code "+rs.getString(2)+" "
 									+"node_cid "+rs.getString(5)+" "
 									+"start_date "+rs.getDate(7)+" "
 									+"end_date "+rs.getDate(8)+" "
 									+"is_active "+rs.getInt(9)
-						);*/
+						);
 					System.out.println("Sql query executed");
 				}
 				else System.out.println("No row returned by sql query");
@@ -275,11 +218,11 @@ public class E4_resource_allocate
 			
 			
 			e.printStackTrace();
-		}  
+		}  */
 		 
 	  //DB ENDS*******************************************
 		//Assertion
-		try {
+	/*	try {
 			
 			
 			if(res.statusCode()==200)
@@ -310,7 +253,7 @@ public class E4_resource_allocate
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
-		}
+		}*/
 	 
 	}
 

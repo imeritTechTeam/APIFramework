@@ -52,14 +52,14 @@ public class E1_CollaboratorEdit
 	@BeforeSuite
 	public void startup()
 	{
-		Dbconnection.dbstartup();
+		Dbconnection.dbstartup("amazon");
 	}
 
   @BeforeClass
   public void setBaseUri () 
   {
 
-	  reports = ExtentManager.GetExtent("http://34.214.158.70:32855/impp/imerit/collaborator/edit/0");
+	  reports = ExtentManager.GetExtent(PathUtility.BaseUrl+"imerit/collaborator/edit/0");
 	  RestAssured.baseURI=PathUtility.BaseUrl+"imerit/collaborator/edit/0"; //ITEST API uri will start from 'imerit'
 	  Log.startLogForThisCase("API Testing Resource collaborator/edit");
 	  IOExcel.excelSetup(PathUtility.BaseFilepath+"E1_CollaboratorEdit.xlsx");

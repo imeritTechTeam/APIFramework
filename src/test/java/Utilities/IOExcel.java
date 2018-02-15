@@ -9,6 +9,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Hashtable;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -123,6 +126,76 @@ public class IOExcel {
 	
 		  
 	}
+	
+	public static Object[][] getDataArray(String SheetName, int startroww,int totalcoll) //specific for roster sheet proj
+	
+	{
+			Object[][] data=null;
+			
+		try
+			{
+				//FileInputStream Scriptfis = new FileInputStream(FilePath);
+				
+				//wbook=new XSSFWorkbook(Scriptfis);
+				sheet = wbook.getSheet(SheetName);
+				System.out.println("Sheet name"+sheet.getSheetName());
+				/*int Startrow=startroww;   
+				int StartCol=0;   */
+				crow=sheet.getRow(0);
+			    
+							
+								
+							int TotalRow=sheet.getLastRowNum();
+						//	int TotalCol=crow.getLastCellNum();
+							int TotalCol=totalcoll;
+							 System.out.println("Total Row"+TotalRow+"\tcol \t"+TotalCol);
+							 
+				                 data=new Object[TotalRow][1];
+				 		    
+			                for(int j=startroww; j<=TotalRow;j++)
+			                    
+			                {           
+			                       table = new Hashtable<String,String>();
+			   
+			                         for(int k=0 ; k<TotalCol; k++)
+			                          {
+			                        	 
+			                        	 String key;
+			                        	 if(k<5)
+			                        	 {
+			                        		 key=getCellData(1, k);
+			                        	 }
+			                        	 else
+			                        	 {
+			                        		 key=getDateData(1, k);
+			                        	 }
+			                        	 String value=getCellData(j, k);
+			                        	 
+			                        	 table.put(key,value );
+			                    
+			                          }
+			   
+			                          data[j-1][0] = table;
+			                
+			                 }
+				              
+						
+			             
+					
+					
+					}
+		catch (Exception e)
+				    
+		{
+				     
+			System.out.println("Could not read the Excelsheet"+e.getMessage());
+		    e.printStackTrace();
+	    }
+				
+		  return data;
+	
+		  
+	}
 	  //*****************Get Data from Cell of Excel sheet *************//
 			public static String getCellData(int RowNum, int ColNum) throws Exception
 			{
@@ -132,11 +205,40 @@ public class IOExcel {
 				     cell = sheet.getRow(RowNum).getCell(ColNum);
 				     
 				     String CellData = (String)cell.getStringCellValue();
+				   //  System.out.println("row:"+RowNum+"col:"+ColNum+"celldata :"+CellData);
 				    
 				    return CellData;
 			   }
 			   catch (Exception e)
 			   {
+				   System.out.println("Row:"+RowNum+"col"+ColNum+"getcelldata"+e);
+			   return "";
+			   }
+	 
+			}
+			public static String getDateData(int RowNum, int ColNum) throws Exception //for roster
+			{
+
+			   try
+			   {
+				     cell = sheet.getRow(RowNum).getCell(ColNum);
+				     String data;
+				     String pattern = "yyyy-MM-dd";
+				     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+				     
+				     Date CellData = cell.getDateCellValue();			       
+				     
+				     data = simpleDateFormat.format(CellData);
+				       
+				    //   data = DateFormat.getDateInstance().format(CellData);  
+				     //  data =CellData.toString() ;
+				   //  System.out.println("row:"+RowNum+"col:"+ColNum+"celldata :"+data);
+				    
+				    return data;
+			   }
+			   catch (Exception e)
+			   {
+				   System.out.println("Row:"+RowNum+"col"+ColNum+"getcelldata"+e);
 			   return "";
 			   }
 	 
@@ -144,7 +246,7 @@ public class IOExcel {
 	public static String getExcelStringData(int row,int col,String sheetname)
 	{
 		String cellvalue=null;
-		
+		System.out.println("inside getExcelStringData(int row,int col,String sheetname) ");
 		try {
 			sheet=wbook.getSheet(sheetname);
 			rowcount=sheet.getLastRowNum();

@@ -50,7 +50,7 @@ public class E4_resource_get_users {
 	@BeforeSuite
 	public void startup()
 	{
-		Dbconnection.dbstartup();
+		Dbconnection.dbstartup("amazon");
 	}
 	
   @BeforeClass

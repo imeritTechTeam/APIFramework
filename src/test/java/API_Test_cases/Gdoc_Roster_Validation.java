@@ -56,12 +56,12 @@ public class Gdoc_Roster_Validation {
 	@BeforeSuite
 	public void startup()
 	{
-		Dbconnection.dbstartup("local");
+		Dbconnection.dbstartup("amazon");
 	}
 	 @BeforeClass
 	  public void setBaseUri () {
 
-		  reports = ExtentManager.GetExtent("GDOC Roster Validation");
+		 
 		  //Get Roster ID present in impp_roster_project;
 		   rosterID=System.getProperty("RosterID");		
 		  //Open excel test file as per argument
@@ -156,7 +156,7 @@ public class Gdoc_Roster_Validation {
 			  Sheet.sheetname="DEC-18";
 		  }
 	
-		  
+		  reports = ExtentManager.GetExtent("GDOC: "+ExcelFile+" Validation: "+Sheet.sheetname); 
 		 
 	  }
 	 @SuppressWarnings("unchecked")
@@ -251,7 +251,7 @@ public class Gdoc_Roster_Validation {
 					{
 						System.out.println("No row returned by sql query");
 					//	test.info("No row returned by sql query");
-						test.fail("Roster details for employee: '"+emp_code+"' Date: '"+datearr[i]+"' is not present in DB (No row returned by sql query)");
+						test.info("Roster details for employee: '"+emp_code+"' Date: '"+datearr[i]+"' is not present in DB (No row returned by sql query)");
 					}
 			
 				

@@ -61,8 +61,10 @@ public class IMIS_login_logout {
 	  
 	  String ExcelFile=System.getProperty("Excelfile");
 	  System.out.println("Excel file argument"+ExcelFile);
+	  IOExcel.excelSetup(".\\TestData\\"+ExcelFile+".xlsx"); 
+	  
 	 // String event=TestData.get("event");
-	  if(ExcelFile.contains("login1"))
+	 /* if(ExcelFile.contains("login1"))
 	  {
 		  IOExcel.excelSetup(".\\TestData\\loginscenario1.xlsx"); 
 	  }
@@ -81,7 +83,7 @@ public class IMIS_login_logout {
 	  else
 	  {
 		  System.out.println("Test data excel cant be opened due to incorrect/missing Maven argument");
-	  }
+	  }*/
   }
  
 
@@ -91,14 +93,14 @@ public class IMIS_login_logout {
   public void postString(Hashtable <String,String> TestData) 
   {
 	  
-	  int randomNum = ThreadLocalRandom.current().nextInt(30000, 200000 );
+	 /* int randomNum = ThreadLocalRandom.current().nextInt(30000, 200000 );
 	  System.out.println("Sleeping for : "+randomNum);
 	  try {
 		Thread.sleep(randomNum);
 	} catch (InterruptedException e) {
 		System.out.println("Sleep issues"+e);
 	}
-	  
+	  */
 	  
   JSONObject jsonreq= new JSONObject();  
   //JSONArray allocateMember= new JSONArray(); 

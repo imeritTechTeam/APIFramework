@@ -151,19 +151,8 @@
                 <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                  
                 </suiteXmlFiles>
-                 <forkCount>10</forkCount>
-              <!--   <reuseForks>false</reuseForks>
-                <properties>
-			   <property>
-			     <name>parallel</name>
-			     <value>suitesAndClasses</value>
-			   </property>
-			   <property>
-			     <name>threadCount</name>
-			     <value>10</value>
-			   </property> 
-			   
-			 </properties>-->
+               
+	               
             </configuration>
         </plugin>
         
@@ -179,5 +168,7 @@
 
     </plugins>
 </build>
+
+
 </project>
 

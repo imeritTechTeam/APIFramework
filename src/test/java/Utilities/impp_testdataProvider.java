@@ -7,7 +7,7 @@ import org.testng.annotations.DataProvider;
 	    static String TestDataRow;
 		 
 
-					@DataProvider(name="testdataProvider" )
+					@DataProvider(name="testdataProvider" ,parallel=true )
 					public  static Object[][] testdataProvider()
 					{
 						 Object[][] TesttabArray=null;

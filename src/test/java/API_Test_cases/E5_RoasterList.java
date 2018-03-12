@@ -50,7 +50,7 @@ public class E5_RoasterList {
 	@BeforeSuite
 	public void startup()
 	{
-		Dbconnection.dbstartup();
+		Dbconnection.dbstartup("amazon");
 	}
 	
   @BeforeClass

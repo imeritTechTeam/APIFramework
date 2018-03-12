@@ -52,7 +52,7 @@ public class E1_InviteCollaborator
 	@BeforeSuite
 	public void startup()
 	{
-		Dbconnection.dbstartup();
+		Dbconnection.dbstartup("amazon");
 	}
 
   @BeforeClass

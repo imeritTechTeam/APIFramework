@@ -111,6 +111,7 @@ public class IMIS_login_logout {
   String projectCode=TestData.get("projectCode");
   
   String event=System.getProperty("event");
+  String ip=System.getProperty("ip");
   System.out.println(event);
   
 
@@ -122,6 +123,7 @@ public class IMIS_login_logout {
   jsonreq.put("empId",empId);
   jsonreq.put("projectCode",projectCode);
   jsonreq.put("event",event);
+  jsonreq.put("ip",ip);
   
 
 	 

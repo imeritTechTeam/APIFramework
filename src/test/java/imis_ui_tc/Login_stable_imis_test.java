@@ -23,8 +23,7 @@ import org.testng.annotations.Test;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 
-import Utilities.DriverFactory;
-import Utilities.DriverManager;
+
 import Utilities.ExtentManager;
 import Utilities.IOExcel;
 import Utilities.PathUtility;
@@ -60,7 +59,7 @@ public class Login_stable_imis_test {
 	}
 	
 	
-	@Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class )
+	/*@Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class )
 	public void loginToProj2(Hashtable <String,String> TestData) throws InterruptedException
 	{
 		//Thread currentThread = Thread.currentThread();
@@ -92,7 +91,7 @@ public class Login_stable_imis_test {
 			System.out.println("Exception"+e);
 		}
 		driver.close();
-	}
+	}*/
 	
 /*	@Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
 	public void loginToProj1(Hashtable <String,String> TestData) throws InterruptedException
@@ -117,14 +116,14 @@ public class Login_stable_imis_test {
 	}*/
 	
 	
-	/*@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Test(dataProvider="testdataProvider",dataProviderClass=Utilities.impp_testdataProvider.class)
 	public void loginToProj(Hashtable <String,String> TestData) throws InterruptedException
 	{
 		 
 		
-		//driver = new ChromeDriver();
-		driver = DriverManager.getDriver();
+		driver = new ChromeDriver();
+		//driver = DriverManager.getDriver();
 		//LOGIN PAGE
 		String empid=TestData.get("empId");
 		String password=TestData.get("password");
@@ -246,7 +245,7 @@ public class Login_stable_imis_test {
 	}
 	
 	
-	*/
+	
 	
 	
 	@AfterClass

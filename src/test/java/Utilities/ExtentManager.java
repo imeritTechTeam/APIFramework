@@ -1,6 +1,10 @@
 package Utilities;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
+
+import org.apache.commons.io.FileUtils;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
@@ -12,6 +16,7 @@ public class ExtentManager {
 	private static ExtentTest test;
 	private static ExtentHtmlReporter htmlReporter;
 	private static String filePath ;
+	public static String filepath;
 	
 	
 	public static ExtentReports GetExtent(String ReportName){
@@ -19,8 +24,10 @@ public class ExtentManager {
 		String filename=ReportName.replace(" ","").replace(":","").replace("/","").replace("//", "").replace(".","");
 		//System.out.println(filename);
 		
-		 filePath="D:\\testdata\\Reports\\API\\"+filename+"_"+timestamp.toString().replace(":", "_").replace("-","_").replace(" ","_").replace(".", "_")+".html";
-		// filePath="./src/ExtentReports/Extent_Report"+timestamp.toString().replace(":", "_").replace("-","_").replace(" ","_").replace(".", "_")+".html";
+		filePath="D:\\testdata\\Reports\\API\\"+filename+"_"+timestamp.toString().replace(":", "_").replace("-","_").replace(" ","_").replace(".", "_")+".html";
+		
+		filepath=filename+".html";
+
 		if (extent != null)
         return extent; //avoid creating new instance of html file
 		
@@ -44,7 +51,20 @@ public class ExtentManager {
         htmlReporter.config().setReportName(ReportName);
         return htmlReporter;
 	}
-	
+	//Copies File to Jenkins Workspace folder for email purposes
+	public static void copyFile(String JenkinsWorkspacePath)
+	{
+		try {
+			String Jenkinsfilepath=JenkinsWorkspacePath+filepath;
+			File source= new File(filePath);
+			File destfile = new File(Jenkinsfilepath);
+			FileUtils.copyFile(source, destfile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	/*public static ExtentTest createTest(String name, String description){
 		test = extent.createTest(name, description);
 		return test;
